@@ -1,0 +1,230 @@
+@import "tailwindcss";
+
+/* ===== Reset & Base ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+  min-height: 100vh;
+}
+
+/* ===== Layout ===== */
+.dashboard {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ===== Hero ===== */
+.hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* ===== Search Section ===== */
+.search-block {
+  background: #1e293b;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  margin-bottom: 2rem;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #38bdf8;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: #6366f1;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #4f46e5;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+}
+
+.btn.ghost:hover {
+  background: #334155;
+}
+
+/* ===== Channel Buttons ===== */
+.channel-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.channel {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #475569;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.channel:hover {
+  background: #334155;
+}
+
+.channel.active {
+  background: #38bdf8;
+  color: #0f172a;
+  border: none;
+  font-weight: 600;
+}
+
+/* ===== Status Text ===== */
+.status-line {
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.status-line.muted {
+  opacity: 0.6;
+}
+
+/* ===== Feedback ===== */
+.feedback {
+  margin-bottom: 1.5rem;
+}
+
+.loading {
+  color: #38bdf8;
+}
+
+.error {
+  color: #f87171;
+}
+
+.empty {
+  opacity: 0.7;
+}
+
+/* ===== News Grid ===== */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #1e293b;
+  padding: 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.card-title:hover {
+  text-decoration: underline;
+}
+
+.card-meta {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-bottom: 0.8rem;
+}
+
+/* ===== Tags ===== */
+.card-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #334155;
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .search-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

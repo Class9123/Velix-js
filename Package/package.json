@@ -1,0 +1,48 @@
+{
+  "name": "velix",
+  "version": "0.0.4",
+  "description": "Frontend framework that also outputs html instead of relying fully on JavaScript.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./plugin": "./plugin.js",
+    "./internal": "./internal.js"
+  },
+  "files": [
+    "compiler/",
+    "plugin/",
+    "React/",
+    "index.js",
+    "internal.js",
+    "plugin.js"
+  ],
+  "keywords": [
+    "html",
+    "htmlFirst",
+    "seoFriendly",
+    "reactive",
+    "framework",
+    "vite",
+    "frontend",
+    "compiler"
+  ],
+  "author": "Jay Govind Mahato",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Class9123/Velix-js.git"
+  },
+  "homepage": "https://github.com/Class9123/Velix-js#readme",
+  "bugs": {
+    "url": "https://github.com/Class9123/Velix-js/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/generator": "^7.28.5",
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
+    "chalk": "^5.6.2",
+    "js-beautify": "^1.15.4"
+  }
+}
