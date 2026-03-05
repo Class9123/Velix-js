@@ -1,4 +1,5 @@
-import scanAndCache from "./plugin/scanComponent.js";
+import path from "path";
+import scanAndCache, { invalidateCachedComponent } from "./plugin/scanComponent.js";
 import { formatHtml } from "./compiler/helpers/index.js";
 import addComponentHtml from "./compiler/helpers/addhtml.js";
 import { formatVelixError, toVelixError } from "./compiler/helpers/error.js";
@@ -17,7 +18,7 @@ function reportVelixError(err, context = {}) {
 }
 
 export default function Scan() {
-  const rootFile = "src/App.jsx";
+  const rootFile = path.resolve(process.cwd(), "src/App.jsx");
 
   return {
     name: "vite-scan-velixJs-plugin",
@@ -54,9 +55,9 @@ export default function Scan() {
     },
 
     load(id) {
-      if (!id.endsWith(".jsx")) return null;
+      const absFile = id.split("?")[0];
+      if (!absFile.endsWith(".jsx")) return null;
       try {
-        const absFile = id;
         const data = scanAndCache(absFile);
         const script =
           data?.script ||
@@ -72,10 +73,11 @@ export default function Scan() {
       }
     },
     handleHotUpdate({ file, server }) {
-      if (!file.endsWith(".jsx")) return [];
+      if (!file.endsWith(".jsx")) return;
       try {
-        scanAndCache(file);
-        server.restart();
+        invalidateCachedComponent(file);
+        server.ws.send({ type: "full-reload" });
+        return [];
       } catch (err) {
         reportVelixError(err, { filePath: file, stage: "hmr" });
       }
