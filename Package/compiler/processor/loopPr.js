@@ -22,7 +22,9 @@ class ForProcessor {
 
     const parsed = this.parseLoopExpression(expr);
     if (!parsed) {
-      throw new Error(`Invalid $for expression: "${expr}". Use "item in items".`);
+      throw new Error(
+        `Invalid $for expression: "${expr}". Use "item in items".`
+      );
     }
     const { itemName, sourceExpr } = parsed;
     const createChildrenId = core.uidGen.nextCreateChildren();
@@ -49,80 +51,12 @@ class ForProcessor {
 
     core.add(`
   return _$root }
-const ${tplId} = ${core.joinPath()}
-const ${cloneId} = ${tplId}.cloneNode(true)
-const ${mapId} = []
-const ${anchorId} = document.createComment("for-end")
-${tplId}.replaceWith(${anchorId})
-
 function ${readSourceId}() {
   const _$src = (${sourceExpr}) ?? [];
   return Array.isArray(_$src) ? _$src : [];
 }
+_$._setUpLopp(${core.joinPath()}, ${createChildrenId}, ${readSourceId})
 
-function ${clearId}(_$record) {
-  if (!_$record) return;
-  let _$node = _$record.first;
-  while (_$node) {
-    const _$next = _$node.nextSibling;
-    _$node.remove();
-    if (_$node === _$record.last) break;
-    _$node = _$next;
-  }
-}
-
-function ${mountId}(${itemName}, _$before = ${anchorId}) {
-  const _$root = ${cloneId}.cloneNode(true).content
-  ${createChildrenId}(_$root, ${itemName})
-  let _$first = _$root.firstChild
-  let _$last = _$root.lastChild
-  if (!_$first) {
-    _$first = document.createComment("for-empty")
-    _$last = _$first
-    _$root.appendChild(_$first)
-  }
-  _$before.before(_$root)
-  return { first: _$first, last: _$last }
-}
-
-${readSourceId}().forEach((_$local) => {
-  ${mapId}.push(${mountId}(_$local, ${anchorId}))
-})
-
-_$.useEffect((config=null) => {
-
-  const data = ${readSourceId}()
-  if (!config || typeof config !== "object") {
-    ${mapId}.forEach(${clearId})
-    ${mapId}.length = 0
-    data.forEach((_$local) => {
-      ${mapId}.push(${mountId}(_$local, ${anchorId}))
-    })
-    return;
-  }
-  const index = config.index
-  if (config.push){
-    ${mapId}.push(${mountId}(data[index], ${anchorId}))
-  } else if (config.setAt){
-    const _$old = ${mapId}[index]
-    if (!_$old) return;
-    const _$nextNode = _$old.first
-    ${mapId}[index] = ${mountId}(data[index], _$nextNode)
-    ${clearId}(_$old)
-  } else if (config.remove){
-    const _$old = ${mapId}[index]
-    if (!_$old) return;
-    ${clearId}(_$old)
-    ${mapId}.splice(index, 1)
-  } else {
-    ${mapId}.forEach(${clearId})
-    ${mapId}.length = 0
-    data.forEach((_$local) => {
-      ${mapId}.push(${mountId}(_$local, ${anchorId}))
-    })
-  }
-
-});
     `);
 
     return { handled: true };

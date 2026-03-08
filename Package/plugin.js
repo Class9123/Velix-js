@@ -45,7 +45,7 @@ export default function Scan() {
           /<div id="app">\s*<\/div>/,
           `<div id="app">${html}</div> 
         <script> 
-        console.log(\`${formatHtml(html)}\`)
+        console.log(\`${html}\`)
         </script>`
         );
         return indexHtml;
