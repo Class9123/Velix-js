@@ -1,14 +1,8 @@
 import { useState, useEffect, useMemo } from "./React/index.js";
 import _setUpLopp from "./React/core/loop.js";
-
-let parent = null;
-
-function setParent(el) {
-  parent = el;
-}
-function getParent() {
-  return parent;
-}
+import _setUpConditional from "./React/core/conditional.js";
+import mountCmp from "./React/core/component.js";
+import { getParent, setParent } from "./React/globals.js";
 
 export default {
   useState,
@@ -16,5 +10,7 @@ export default {
   useMemo,
   setParent,
   getParent,
-  _setUpLopp
+  _setUpLopp,
+  _setUpConditional,
+  mountCmp
 };

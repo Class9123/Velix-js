@@ -1,52 +1,43 @@
-import {
-  setCurrentEffect,
-  currentEffect
-} from "../globals.js";
+import { setCurrentEffect, currentEffect } from "../globals.js";
 
-import {
-  queueEffect
-} from "./dom.js";
+import { queueEffect } from "./dom.js";
 
 export default function useMemo(fn) {
+  const effects = new Set();
   let cachedValue;
-  let dirty = true;
-
-  // Effects that depend on this memo
-  const subscribers = new Set();
-
-  // Recompute value (lazy)
-  const compute = () => {
-    dirty = false;
-
-    // Track dependencies of this memo
-    const trackingEffect = {
-      fn: invalidate,
-      cleanup: null
-    };
-
-    setCurrentEffect(trackingEffect);
-    cachedValue = fn();
-    setCurrentEffect(null);
+  let dirty = false;
+  const trackingEffect = {
+    fn: null,
+    cleanup: null,
+    cleanSelf: null
   };
 
-  // Called when a dependency of memo changes
-  const invalidate = () => {
+  setCurrentEffect(trackingEffect);
+  cachedValue = fn();
+  setCurrentEffect(null);
+
+  const compute = () => {
+    dirty = false;
+    cachedValue = fn();
+  };
+
+  trackingEffect.fn = () => {
     if (!dirty) {
       dirty = true;
-
-      // Notify subscribers (effects using this memo)
-      queueEffect(subscribers);
+      queueEffect(effects);
     }
   };
 
   // The memo getter
   function memo() {
-    // If inside an effect, register it
     if (currentEffect) {
-      subscribers.add(currentEffect);
+      const effect = currentEffect;
+      effects.add(effect);
+      currentEffect.cleanSelf = () => {
+        effects.delete(effect);
+      };
     }
 
-    // Lazy recompute
     if (dirty) {
       compute();
     }

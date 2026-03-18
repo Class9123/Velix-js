@@ -6,8 +6,13 @@ export function useState(initialValue) {
   const effects = new Set();
   const getter = () => {
     if (currentEffect) {
-      effects.add(currentEffect);
+      const effect = currentEffect;
+      effects.add(effect);
+      currentEffect.cleanSelf = () => {
+        effects.delete(effect);
+      };
     }
+    console.log("State .js", Array.from(effects));
     return value;
   };
 
@@ -37,7 +42,11 @@ export function useArray(initialValue = []) {
   };
   const getter = () => {
     if (currentEffect) {
-      effects.add(currentEffect);
+      const effect = currentEffect;
+      effects.add(effect);
+      currentEffect.cleanSelf = () => {
+        effects.delete(effect);
+      };
     }
     return array;
   };

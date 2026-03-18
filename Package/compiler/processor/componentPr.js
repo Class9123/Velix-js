@@ -51,14 +51,12 @@ class ComponentProcessor {
       ...dep,
       placeholder
     });
-
     const id = core.uidGen.nextElement();
     const propsExpr = this.buildPropsExpression(path);
 
     core.add(`
       const ${id} = ${core.joinPath()}
-      _$.setParent(${id})
-      ${propsExpr ? `${tag}(${propsExpr})` : `${tag}()`}
+      _$.mountCmp(() => ${propsExpr ? `${tag}(${propsExpr})` : `${tag}()`}, ${id})
     `);
 
     core.obj.html += placeholder;

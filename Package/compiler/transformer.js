@@ -46,6 +46,7 @@ class DirectivePluginManager {
 
 class Transformer {
   constructor(options = {}) {
+    this.MAX_PATH_LENHTH = 15;
     this.pluginManager = new DirectivePluginManager(this);
     this.structuralDirectives = new Set(["$if", "$for"]);
     this.resolveSelfComponentName =
@@ -475,7 +476,7 @@ class Transformer {
     const pathCopy = [...this.path];
 
     for (let i = 0; i < logicalChildren.length; i++) {
-      if (this.path.length % 6 === 0) {
+      if (this.path.length % this.MAX_PATH_LENHTH === 0) {
         const id = this.uidGen.nextRefrence();
         this.add(`const ${id} = ${this.joinPath()}`);
         this.path.push(id);

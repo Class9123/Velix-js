@@ -1,15 +1,17 @@
-import { useState, useArray } from "velix";
+import { useState, useMemo } from "velix";
 
 export default function App() {
-  const t = useArray([1, 2, 3, 4]);
+  const [st, setSt] = useState(0);
+
+  const isEven = useMemo(() => st() % 2 === 0);
+
   return (
     <div>
-      <p $for={i in t()}>
-        Hi {i} times
-        <p $for={i in t()}> Hi {i} times </p>
-      </p>
+      <button onClick={() => setSt(p => p + 1)}>Increment +</button>
+      <button onClick={() => setSt(p => p - 1)}>Decrement -</button>
       
-        {"hi "}
+      <p>{st()} is even ({isEven()})</p>
+      
     </div>
   );
 }

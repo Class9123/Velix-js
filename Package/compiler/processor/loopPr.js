@@ -28,14 +28,7 @@ class ForProcessor {
     }
     const { itemName, sourceExpr } = parsed;
     const createChildrenId = core.uidGen.nextCreateChildren();
-    const mountId = core.uidGen.nextLoop();
-    const clearId = core.uidGen.nextLoop();
     const readSourceId = core.uidGen.nextLoop();
-    const tplId = core.uidGen.nextTemplate();
-    const cloneId = core.uidGen.nextCloneId();
-    const mapId = core.uidGen.nextMap();
-    const anchorId = core.uidGen.nextComment();
-
     core.obj.html += "<template>";
     core.add(`
      function ${createChildrenId}(_$root,${itemName}) {
@@ -43,12 +36,10 @@ class ForProcessor {
     core.path.push("_$root");
     core.renderElement(path, {
       includeDirectives: false,
-      targetRef: "_$root.f",
       processChildren: true
     });
     core.path.pop();
     core.obj.html += "</template>";
-
     core.add(`
   return _$root }
 function ${readSourceId}() {

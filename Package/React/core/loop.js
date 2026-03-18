@@ -1,9 +1,11 @@
 import { useEffect } from "../index.js";
+import { createInstance, destroy } from "./component.js";
+import {
+  getLastComponent,
+  removeLastComponent,
+  addComponent
+} from "../globals.js";
 // hlepers
-function readSource(source) {
-  const src = source ?? [];
-  return Array.isArray(src) ? src : [];
-}
 
 function clear(record) {
   if (!record) return;
@@ -17,8 +19,9 @@ function clear(record) {
 }
 
 function mount(createChildren, clone, item, before) {
-  const root = clone.cloneNode(true).content;
+  const root = clone.cloneNode(true).content.f;
   createChildren(root, item);
+
   let first = root.firstChild;
   let last = root.lastChild;
   if (!first) {
@@ -31,15 +34,22 @@ function mount(createChildren, clone, item, before) {
 }
 
 export default function _setUpLoop(tpl, createChildren, source) {
-  console.log(createChildren)
   const clone = tpl.cloneNode(true);
   const map = [];
   const anchor = document.createComment("for-end");
   tpl.replaceWith(anchor);
 
+  let instance = createInstance();
+  const parentInstance = getLastComponent();
+  if (parentInstance) {
+    parentInstance.childComponent.add(instance);
+  }
+
   useEffect((config = null) => {
     const data = source();
     if (!config || typeof config !== "object") {
+      if (!instance) instance = createInstance();
+      addComponent(instance);
       map.forEach(clear);
       map.length = 0;
       data.forEach(local => {
@@ -47,6 +57,9 @@ export default function _setUpLoop(tpl, createChildren, source) {
       });
       return;
     }
+    
+    if (!instance) instance = createInstance();
+    addComponent(instance);
     const index = config.index;
     if (config.push) {
       map.push(mount(createChildren, clone, data[index], anchor));
