@@ -110,9 +110,9 @@ class Transformer {
           filePath: this.filePath,
           loc: loc
             ? {
-                line: loc.line,
-                column: loc.column + 1
-              }
+              line: loc.line,
+              column: loc.column + 1
+            }
             : null
         }
       );
@@ -402,16 +402,15 @@ class Transformer {
       const id = this.uidGen.nextTextNode();
       let hasExpr = false;
 
-      const expr = path
-        .map(p => {
-          if (p.isJSXText()) {
-            this.obj.html += p.node.value;
-            return JSON.stringify(p.node.value);
-          }
+      const expr = path.map(p => {
+        if (p.isJSXText()) {
+          this.obj.html += p.node.value;
+          return JSON.stringify(p.node.value);
+        }
 
-          hasExpr = true;
-          return `String(${generate.default(p.node.expression).code})`;
-        })
+        hasExpr = true;
+        return `String(${generate.default(p.node.expression).code})`;
+      })
         .join(" + ");
 
       if (hasExpr) {
@@ -453,9 +452,9 @@ class Transformer {
             filePath: this.filePath,
             loc: loc
               ? {
-                  line: loc.line,
-                  column: loc.column + 1
-                }
+                line: loc.line,
+                column: loc.column + 1
+              }
               : null
           }
         );
@@ -474,15 +473,14 @@ class Transformer {
     const logicalChildren = this.buildLogicalChildPaths(childPaths);
 
     const pathCopy = [...this.path];
-
     for (let i = 0; i < logicalChildren.length; i++) {
+      this.path.push(i === 0 ? "f" : "n");
       if (this.path.length % this.MAX_PATH_LENHTH === 0) {
         const id = this.uidGen.nextRefrence();
         this.add(`const ${id} = ${this.joinPath()}`);
         this.path.push(id);
       }
 
-      this.path.push(i === 0 ? "f" : "n");
       this.process(logicalChildren[i]); // group OR NodePath
     }
 

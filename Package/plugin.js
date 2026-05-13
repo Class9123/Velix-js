@@ -1,6 +1,6 @@
 import path from "path";
+import "./compiler/helpers/color.js"
 import scanAndCache, { invalidateCachedComponent } from "./plugin/scanComponent.js";
-import { formatHtml, formatJs } from "./compiler/helpers/index.js";
 import addComponentHtml from "./compiler/helpers/addhtml.js";
 import { formatVelixError, toVelixError } from "./compiler/helpers/error.js";
 
@@ -66,7 +66,7 @@ export default function Scan() {
         console.log("Dev time ")
       }
       `;
-      console.log(formatJs(script))
+        console.code(script)
         return script;
       } catch (err) {
         reportVelixError(err, { filePath: id, stage: "load" });

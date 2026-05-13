@@ -15,7 +15,7 @@ export function createInstance() {
   };
 }
 
-export default function instanceComponent(component, parent) {
+export default function mountComponent(component, parent) {
   const instance = createInstance();
   _$.setParent(parent);
   const parentInstance = getLastComponent();

@@ -14,18 +14,40 @@ Short version: React-like reactivity, but your HTML goes to the gym first.
 
 Most UI frameworks keep doing runtime work:
 
-- render
-- diff
-- patch
-- repeat
+* render
+* diff
+* patch
+* repeat
 
 Velix tries to move that cost to compile time.
 
-- HTML is generated ahead of time.
-- DOM paths are precomputed.
-- Runtime only updates exactly what changed.
+* HTML is generated ahead of time.
+* DOM paths are precomputed.
+* Runtime only updates exactly what changed.
 
 No virtual DOM here. Just real DOM and targeted updates.
+
+## Output model (IMPORTANT)
+
+Velix does **not output only JavaScript**.
+
+Instead, the compilation process produces a **hybrid output**:
+
+* **Static HTML is generated first** (pre-rendered structure)
+* **Minimal JavaScript is added only for interactivity and reactivity**
+* The runtime does NOT rebuild the UI from JS every render
+
+👉 This means:
+
+* Your app is not a JS-only UI tree
+* Most of the UI exists as real HTML from the start
+* JavaScript only “activates” parts of the DOM where needed
+
+In simple terms:
+
+> Velix compiles JSX into real HTML + tiny reactive JS glue, not a fully JavaScript-rendered UI.
+
+---
 
 ## Quick start
 
@@ -58,7 +80,6 @@ import { mount } from "velix";
 
 const root = document.getElementById("app");
 mount(App, root);
-
 ```
 
 ### 4. Run
@@ -73,8 +94,8 @@ Current plugin default root is `src/App.jsx`. Keep that file name/path, or updat
 
 Velix state values are **getter functions**.
 
-- Read with `count()` not `count`
-- Effects track dependencies by calling getters
+* Read with `count()` not `count`
+* Effects track dependencies by calling getters
 
 If you forget the `()`, your UI will politely do nothing.
 
@@ -98,22 +119,14 @@ setCount(p => p + 1);
 
 ### `useEffect(callback, deps)`
 
-- Runs immediately once.
-- Re-runs when tracked deps change.
-- Automatically tracks accesed signals inside the effect (Optional deps like in react)
+* Runs immediately once.
+* Re-runs when tracked deps change.
+* Automatically tracks accessed signals inside the effect.
 
 ```js
 useEffect(() => {
   console.log("count changed:", count());
 });
-```
-
-# with deps
-
-```js
-useEffect(() => {
-  console.log("count changed:", count());
-}, [count]);
 ```
 
 ### `useMemo(fn)`
@@ -137,43 +150,25 @@ items.push("c");
 items.setAt(0, "A");
 items.remove(1);
 items.pop();
-items.setNew(["x", "y"]); // full replace
+items.setNew(["x", "y"]);
 items.setNew(prev => [...prev, "z"]);
 ```
 
-`setNew` triggers a full list refresh signal.
-
 ## Built-in JSX attributes (directives)
 
-These are Velix-specific attributes.
-
-## `$if`
-
-Mount/unmount element by condition.
+### `$if`
 
 ```jsx
 <div $if={count() > 10}>Now you see me</div>
 ```
 
-Use when element should not exist in DOM when false.
-
-## `$when`
-
-Toggle visibility using `display: none`.
+### `$when`
 
 ```jsx
 <div $when={isOpen()}>I stay mounted, just hidden</div>
 ```
 
-Use when you want to preserve DOM state but hide it.
-
-## `$for`
-
-Loop rendering. Syntax:
-
-- `$for={item in source}`
-- `$for={item of source}`
-- `$for={(item) in source}`
+### `$for`
 
 ```jsx
 <ul>
@@ -181,54 +176,11 @@ Loop rendering. Syntax:
 </ul>
 ```
 
-Notes:
-
-- `source` must evaluate to an array.
-- Nested loops are supported.
-- Nested conditionals inside loops are supported.
-
-## `$ref`
-
-Access actual DOM node.
+### `$ref`
 
 ```jsx
 <div $ref={el => console.log(el)} />
 ```
-
-Or object ref style:
-
-```jsx
-const boxRef = { current: null };
-<div $ref={boxRef} />;
-```
-
-## Regular attrs, events, spread
-
-Velix also supports normal JSX attributes and spread:
-
-```jsx
-<button
-  className={count() > 5 ? "hot" : "cold"}
-  onClick={() => setCount(p => p + 1)}
-  {...extraProps()}
->
-  Click
-</button>
-```
-
-## Component composition
-
-Components inside components are supported, including cross-file imports.
-
-```jsx
-import Card from "./Card";
-
-export default function App() {
-  return <Card />;
-}
-```
-
-Nested component HTML is expanded during compile/scan phase.
 
 ## Full example
 
@@ -242,7 +194,6 @@ function Badge() {
 export default function App() {
   const [count, setCount] = useState(0);
   const todos = useArray(["Ship", "Sleep"]);
-  const titleRef = { current: null };
 
   const status = useMemo(() => (count() > 3 ? "busy" : "chill"));
 
@@ -252,14 +203,9 @@ export default function App() {
 
   return (
     <main>
-      <h1 $ref={titleRef}>Count: {count()}</h1>
-
-      <p $when={count() % 2 === 0}>Visible only on even counts</p>
-      <p $if={count() > 2}>Appears only after 2</p>
+      <h1>Count: {count()}</h1>
 
       <button onClick={() => setCount(p => p + 1)}>+1</button>
-      <button onClick={() => todos.push(`Todo ${count()}`)}>Add Todo</button>
-      <button onClick={() => todos.setNew(["Reset"])}>Reset List</button>
 
       <ul>
         <li $for={todo in todos()}>
@@ -271,26 +217,15 @@ export default function App() {
 }
 ```
 
-## Practical rules
-
-1. Always call state getters (`x()`).
-2. Keep `useEffect` deps as getter functions (`[count, todos]`).
-3. Use `$if` for mount/unmount, `$when` for visibility.
-4. Use `$for` only with array-like sources (ideally arrays).
-5. Use `$ref` only when you really need DOM access.
-
-## Known limits (for now)
-
-- Early-stage project, breaking changes can happen.
-- Error messages are improving but still basic.
-- API ergonomics are still evolving.
-
 ## Final vibe check
 
-If you want:
+Velix is:
 
-- real HTML first
-- tiny runtime updates
-- React-like mental model without React-sized runtime work
+* HTML-first
+* compile-heavy
+* runtime-light
+* JSX-friendly
 
-Velix is your weird little friend.
+And importantly:
+
+> It is not a JS-only rendering system — it generates real HTML first, then enhances it with minimal JavaScript for interactivity.
