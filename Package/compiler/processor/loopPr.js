@@ -40,16 +40,17 @@ class ForProcessor {
     });
     core.path.pop();
     core.obj.html += "</template>";
+    const ref = core.uidGen.nextRefrence()
     core.add(`
   return _$root }
 function ${readSourceId}() {
   const _$src = (${sourceExpr}) ?? [];
   return Array.isArray(_$src) ? _$src : [];
 }
-_$._setUpLopp(${core.joinPath()}, ${createChildrenId}, ${readSourceId})
-
+const ${ref} = _$._setUpLopp(${core.joinPath()}, ${createChildrenId}, ${readSourceId})
     `);
-
+// _setUpLopp retuns the anchor element used to track further elements 
+    core.path = [ref] 
     return { handled: true };
   }
 }

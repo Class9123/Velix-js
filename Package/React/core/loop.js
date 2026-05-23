@@ -1,85 +1,135 @@
 import { useEffect } from "../index.js";
-import { createInstance, destroy } from "./component.js";
+import { createInstance, destroy, resetInstance } from "./component.js";
 import {
   getLastComponent,
   removeLastComponent,
   addComponent
 } from "../globals.js";
-// hlepers
 
-function clear(record) {
-  if (!record) return;
-  let node = record.first;
-  while (node) {
-    const next = node.nextSibling;
-    node.remove();
-    if (node === record.last) break;
-    node = next;
+function createCmpIns() {
+  const instance = createInstance();
+
+  const parent = getLastComponent();
+
+  if (parent) {
+    parent.childComponent.add(instance);
   }
+
+  return instance;
 }
 
 function mount(createChildren, clone, item, before) {
   const root = clone.cloneNode(true).content.f;
+
   createChildren(root, item);
 
-  let first = root.firstChild;
-  let last = root.lastChild;
-  if (!first) {
-    first = document.createComment("for-empty");
-    last = first;
-    root.appendChild(first);
-  }
   before.before(root);
-  return { first: first, last: last };
+
+  return root;
+}
+
+function createRecord(createChildren, clone, item, anchor) {
+  const instance = createCmpIns();
+
+  addComponent(instance);
+
+  const root = mount(createChildren, clone, item, anchor);
+
+  removeLastComponent();
+
+  return {
+    instance,
+    root
+  };
 }
 
 export default function _setUpLoop(tpl, createChildren, source) {
   const clone = tpl.cloneNode(true);
+
   const map = [];
+
   const anchor = document.createComment("for-end");
+
   tpl.replaceWith(anchor);
 
-  let instance = createInstance();
-  const parentInstance = getLastComponent();
-  if (parentInstance) {
-    parentInstance.childComponent.add(instance);
-  }
+  const instance = createCmpIns();
 
   useEffect((config = null) => {
     const data = source();
-    if (!config || typeof config !== "object") {
-      if (!instance) instance = createInstance();
-      addComponent(instance);
-      map.forEach(clear);
-      map.length = 0;
-      data.forEach(local => {
-        map.push(mount(createChildren, clone, local, anchor));
-      });
-      return;
-    }
-    
-    if (!instance) instance = createInstance();
+
     addComponent(instance);
-    const index = config.index;
-    if (config.push) {
-      map.push(mount(createChildren, clone, data[index], anchor));
+
+    const index = config?.index;
+
+    if (!config || typeof config !== "object") {
+      map.forEach(record => {
+        record.root.remove();
+        destroy(record.instance);
+      });
+
+      map.length = 0;
+
+      data.forEach(item => {
+        map.push(
+          createRecord(createChildren, clone, item, anchor)
+        );
+      });
+    } else if (config.push) {
+      map.push(
+        createRecord(createChildren, clone, data[index], anchor)
+      );
     } else if (config.setAt) {
       const old = map[index];
-      if (!old) return;
-      const nextNode = old.first;
-      map[index] = mount(createChildren, clone, data[index], nextNode);
-      clear(old);
+
+      if (old) {
+        addComponent(old.instance);
+
+        const root = mount(
+          createChildren,
+          clone,
+          data[index],
+          old.root
+        );
+
+        removeLastComponent();
+
+        old.root.remove();
+        destroy(old.instance)
+        resetInstance(old.instance);
+
+        map[index] = {
+          instance: old.instance,
+          root
+        };
+      }
     } else if (config.remove) {
       const old = map[index];
-      if (!old) return;
-      clear(old);
-      map.splice(index, 1);
-    } else {
-      map.forEach(clear);
+
+      if (old) {
+        old.root.remove();
+        
+        instance.childComponent.delete(old.instance)
+        destroy(old.instance);
+
+        map.splice(index, 1);
+      }
+    } else if (config.setNew) {
+      map.forEach(record => {
+        record.root.remove();
+        destroy(record.instance);
+      });
+
       map.length = 0;
-      data.forEach(local => {
-        map.push(mount(createChildren, clone, local, anchor));
+
+      data.forEach(item => {
+        map.push(
+          createRecord(createChildren, clone, item, anchor)
+        );
       });
     }
+
+    removeLastComponent();
   });
+
+  return anchor;
 }

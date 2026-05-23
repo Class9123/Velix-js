@@ -12,7 +12,6 @@ export function useState(initialValue) {
         effects.delete(effect);
       };
     }
-    console.log("State .js", Array.from(effects));
     return value;
   };
 
