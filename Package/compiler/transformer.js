@@ -1,4 +1,4 @@
-/* Ai generated */ 
+/* Ai generated */
 import uidGenerator from "./helpers/uid.js";
 import ConditionalPr from "./processor/conditional.js";
 import LoopPr from "./processor/loopPr.js";
@@ -9,6 +9,8 @@ import * as t from "@babel/types";
 
 import { isComponentTag, resolveImportedPath } from "./helpers/index.js";
 import { throwVelixError } from "./helpers/error.js";
+import { isValidHTMLNesting } from 'validate-html-nesting';
+
 
 /* -------------------------------------------------------------------------- */
 /*                                   HELPERS                                  */
@@ -796,6 +798,27 @@ _$.useEffect(() => {
           "Unsupported JSX tag type.",
           opening.name
         );
+      }
+
+      const parent = path.parentPath;
+      if (
+        parent?.isJSXElement()
+      ) {
+        const parentTag = getTagName(
+          parent.node.openingElement.name
+        );
+
+        const valid = isValidHTMLNesting(
+          parentTag,
+          tag
+        );
+
+        if (!valid) {
+          this.throwCompileError(
+            `Invalid HTML nesting: <${tag}> inside <${parentTag}>`,
+            opening.name
+          );
+        }
       }
 
       if (isComponentTag(tag)) {

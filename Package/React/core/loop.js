@@ -108,7 +108,7 @@ export default function _setUpLoop(tpl, createChildren, source) {
       if (old) {
         old.root.remove();
         
-        instance.childComponent.remove(old.instance)
+        instance.childComponent.delete(old.instance)
         destroy(old.instance);
 
         map.splice(index, 1);

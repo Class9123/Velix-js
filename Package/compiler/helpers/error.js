@@ -44,12 +44,12 @@ export function toVelixError(err, context = {}) {
       original.velix?.loc ||
       (original.loc
         ? {
-            line: asNumber(original.loc.line),
-            column:
-              asNumber(original.loc.column) !== null
-                ? original.loc.column + 1
-                : null
-          }
+          line: asNumber(original.loc.line),
+          column:
+            asNumber(original.loc.column) !== null
+              ? original.loc.column + 1
+              : null
+        }
         : null)
   };
 
@@ -73,7 +73,7 @@ function codeFrame(sourceCode, line, column) {
   let out = "";
   for (let n = start; n <= end; n++) {
     const marker = n === line ? chalk.red(">") : " ";
-    out += `${marker} ${chalk.gray(String(n).padStart(width, " "))} | ${lines[n - 1] ?? ""}\n`;
+    out += `${marker} ${chalk.green(String(n).padStart(width, " "))} | ${lines[n - 1] ?? ""}\n`;
     if (n === line) {
       const caretPad = " ".repeat(Math.max(0, (column || 1) - 1));
       out += `  ${" ".repeat(width)} | ${caretPad}${chalk.red("^")}\n`;
@@ -95,7 +95,7 @@ export function formatVelixError(err, fallback = {}) {
       : filePath;
   const where =
     loc.line != null ? `${relFile}:${loc.line}:${loc.column || 1}` : relFile;
-  const title = chalk.bgRed.white.bold(" PRIVO ERROR ");
+  const title = chalk.bgRed.white.bold(" VELIX ERROR ");
   const stage = p.stage ? chalk.magenta(`[${p.stage}]`) : "";
   const head = `${title} ${stage} ${chalk.cyan(where)}`.trim();
   const message = chalk.white(
